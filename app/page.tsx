@@ -77,6 +77,7 @@ export default function Home() {
       console.error(error);
     } else {
       console.log("Saved!");
+      fetchProducts();
     }
 
     setProductName("");
@@ -87,7 +88,6 @@ export default function Home() {
   };
 
   const handleDelete = async (id: number) => {
-    alert(';asd')
     const { data, error } = await supabase
       .from("products")
       .delete()
