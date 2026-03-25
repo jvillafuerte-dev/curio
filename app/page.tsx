@@ -1,65 +1,197 @@
-import Image from "next/image";
+  "use client";
+  import Image from "next/image";
+  import { Button } from '@/components/ui/button';
+  import { Card } from "@/components/ui/card";
+  import { Input } from "@/components/ui/input";
+  import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+  } from "@/components/ui/empty"
+  import {
+    Table,
+    TableCaption,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+    TableFooter
+  } from "@/components/ui/table";
+  import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+  import { useState, useEffect } from "react";
+  import { supabase } from "@/lib/supabase";
+  import { DropdownMenu, 
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator
+  } from "@/components/ui/dropdown-menu";
+  import { MoreHorizontalIcon } from "lucide-react";
+
+
 
 export default function Home() {
+
+  const [products, setProducts] = useState<any[]>([])
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+
+    if (error) {
+      console.error(error)
+    } else {
+      setProducts(data)
+    }
+  }
+
+  const [productName, setProductName] = useState("")
+  const [sku, setSku] = useState("")
+  const [costPrice, setCostPrice] = useState("")
+  const [sellingPrice, setSellingPrice] = useState("")
+  const [stock, setStock] = useState("")
+
+  const handleSave = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .insert([
+        {
+          product_name: productName,
+          sku: sku,
+          cost_price: costPrice,
+          selling_price: sellingPrice,
+          stock: stock,
+        },
+      ]);
+
+    if (error) {
+      console.error(error);
+    } else {
+      console.log("Saved!");
+    }
+
+    setProductName("");
+    setSku("");
+    setCostPrice("");
+    setSellingPrice("");
+    setStock("");
+  };
+
+  const handleDelete = async (id: number) => {
+    alert(';asd')
+    const { data, error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id)
+    if (error) {
+      console.error(error);
+    } else {
+      fetchProducts();
+    }
+  }
+  
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="m-4 p-2 w-[800px] mx-auto">
+      <Table className="border-1 mb-2">
+        {/* <TableCaption>Inventory</TableCaption> */}
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Product Name</TableHead>
+            <TableHead>SKU</TableHead>
+            <TableHead>Cost Price</TableHead>
+            <TableHead>Selling Price</TableHead>
+            <TableHead>Stock</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {products.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6}>
+                <Empty>
+                  <EmptyTitle>No products yet.</EmptyTitle>
+                  <EmptyDescription>
+                    You haven't created any products yet.
+                  </EmptyDescription>
+                </Empty>
+              </TableCell>
+            </TableRow>
+          ) : (
+            products.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell>{product.product_name}</TableCell>
+                <TableCell className="font-medium">{product.sku}</TableCell>
+                <TableCell>{product.cost_price}</TableCell>
+                <TableCell>{product.selling_price}</TableCell>
+                <TableCell>{product.stock}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="size-8"><MoreHorizontalIcon /><span className="sr-only">Open menu</span></Button>} />
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" onClick={() => handleDelete(product.id)}>
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+        {/* <TableFooter>
+          <TableRow>
+            <TableCell colSpan={3}>Total</TableCell>
+            <TableCell className="text-right">$2,500.00</TableCell>
+          </TableRow>
+        </TableFooter> */}
+      </Table>
+      
+      <Card className="p-8">
+        <Field orientation="horizontal">
+          <div className="w-full">
+            <FieldLabel htmlFor="productName">Product Name <span className="text-destructive">*</span></FieldLabel>
+            <Input required id="productName" value={productName} onChange={(e)=>setProductName(e.target.value)}></Input>
+          </div>
+          
+          <div className="w-full">
+            <FieldLabel htmlFor="SKU">SKU <span className="text-destructive">*</span></FieldLabel>
+            <Input required id="SKU" value={sku} onChange={(e)=>setSku(e.target.value)}></Input>
+          </div>
+        </Field>
+        
+        <Field orientation="horizontal">
+          <div className="w-full">
+            <FieldLabel>Cost Price <span className="text-destructive">*</span></FieldLabel>
+            <Input required id="costPrice" value={costPrice} onChange={(e)=>setCostPrice(e.target.value)}></Input>
+          </div>
+          <div className="w-full">
+            <FieldLabel>Selling Price <span className="text-destructive">*</span></FieldLabel>
+            <Input required id="sellingPrice" value={sellingPrice} onChange={(e)=>setSellingPrice(e.target.value)}></Input>
+          </div>
+
+          <div>
+            <FieldLabel>Stock <span className="text-destructive">*</span></FieldLabel>
+            <Input required id="stock" value={stock} onChange={(e)=>setStock(e.target.value)}></Input>
+          </div>
+
+        </Field>
+
+        <div className="flex justify-end">
+          <Button className="cursor-pointer" onClick={handleSave}>Save</Button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </Card>
     </div>
   );
 }
