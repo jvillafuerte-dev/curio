@@ -175,7 +175,7 @@ export default function Home() {
         <div className="w-full">
           <FieldLabel htmlFor="textArea">Product Description</FieldLabel>
           <Textarea required id="textarea"></Textarea>
-          
+
         </div>
         
         <Field orientation="horizontal">
@@ -194,7 +194,7 @@ export default function Home() {
           </div>
 
           <div className="w-full">
-            <FieldLabel>Stock/ Quantity <span className="text-destructive">*</span></FieldLabel>
+            <FieldLabel>Stock/ Quantitys <span className="text-destructive">*</span></FieldLabel>
             <Input required id="stock" value={stock} onChange={(e)=>setStock(e.target.value)}></Input>
           </div>
         </Field>
