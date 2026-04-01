@@ -175,6 +175,7 @@ export default function Home() {
         <div className="w-full">
           <FieldLabel htmlFor="textArea">Product Description</FieldLabel>
           <Textarea required id="textarea"></Textarea>
+          
         </div>
         
         <Field orientation="horizontal">
