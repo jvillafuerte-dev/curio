@@ -3,6 +3,7 @@
   import { Button } from '@/components/ui/button';
   import { Card } from "@/components/ui/card";
   import { Input } from "@/components/ui/input";
+  import { Textarea } from "@/components/ui/textarea";
   import {
     Empty,
     EmptyContent,
@@ -167,9 +168,14 @@ export default function Home() {
           
           <div className="w-full">
             <FieldLabel htmlFor="SKU">SKU <span className="text-destructive">*</span></FieldLabel>
-            <Input required id="SKU" value={sku} onChange={(e)=>setSku(e.target.value)}></Input>
+            <Input id="SKU" value={sku} onChange={(e)=>setSku(e.target.value)}></Input>
           </div>
         </Field>
+
+        <div className="w-full">
+          <FieldLabel htmlFor="textArea">Product Description</FieldLabel>
+          <Textarea required id="textarea"></Textarea>
+        </div>
         
         <Field orientation="horizontal">
           <div className="w-full">
@@ -177,15 +183,24 @@ export default function Home() {
             <Input required id="costPrice" value={costPrice} onChange={(e)=>setCostPrice(e.target.value)}></Input>
           </div>
           <div className="w-full">
+            <FieldLabel>Markup <span className="text-destructive">*</span></FieldLabel>
+            <Input required id="markup"></Input>
+          </div>
+          
+          <div className="w-full">
             <FieldLabel>Selling Price <span className="text-destructive">*</span></FieldLabel>
             <Input required id="sellingPrice" value={sellingPrice} onChange={(e)=>setSellingPrice(e.target.value)}></Input>
           </div>
 
-          <div>
-            <FieldLabel>Stock <span className="text-destructive">*</span></FieldLabel>
+          <div className="w-full">
+            <FieldLabel>Stock/ Quantity <span className="text-destructive">*</span></FieldLabel>
             <Input required id="stock" value={stock} onChange={(e)=>setStock(e.target.value)}></Input>
           </div>
+        </Field>
 
+        <Field>
+          <FieldLabel htmlFor="notes">Notes</FieldLabel>
+          <Textarea id="notes"></Textarea>
         </Field>
 
         <div className="flex justify-end">
